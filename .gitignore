@@ -1,0 +1,23 @@
+# ---- Rust build artifacts ----
+target/
+
+# SQLite databases
+*.db
+*.db-shm
+*.db-wal
+
+# ---- Environment variables / secrets ----
+.env
+.env.local
+.env.*.local
+
+# ---- Editor specific ----
+.vscode/
+.idea/
+.zed/
+*.swp
+*.swo
+.DS_Store
+
+# ---- Compiled/generated files ----
+*.pdb
