@@ -2,6 +2,7 @@ mod models;
 
 use models::user::User;
 use models::room::Room;
+use models::message::{Message, MessageType};
 
 fn main() {
     let user = User::new(
@@ -18,8 +19,16 @@ fn main() {
         user.id,
     );
 
+    let message = Message::new(
+        1,
+        MessageType::Text,
+        user.id,
+        room.id,
+        String::from("Wohooo First Message")
+    );
 
     println!("Created user: {:#?}", user);
     println!("Created room: {:#?}", room);
+    println!("Created message: {:#?}", message);
     println!("Valid username: {}", models::user::User::is_valid_username(&user.username));
 }
