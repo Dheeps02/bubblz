@@ -1,10 +1,13 @@
-#[derive(Debug)]
+use serde::{Serialize, Deserialize};
+
+#[derive(Debug, Serialize, Deserialize, sqlx::Type)]
+#[sqlx(type_name = "TEXT", rename_all = "PascalCase")]
 pub enum MessageType {
     System,
     Text,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
 pub struct Message {
     pub id: i64,
     pub message_type: MessageType,
