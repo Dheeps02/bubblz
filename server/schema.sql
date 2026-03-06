@@ -1,14 +1,14 @@
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY NOT NULL,
-    username TEXT NOT NULL,
-    email TEXT NOT NULL,
+    username TEXT NOT NULL UNIQUE,
+    email TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
     created_at INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS rooms (
     id INTEGER PRIMARY KEY NOT NULL,
-    name TEXT NOT NULL,
+    name TEXT NOT NULL UNIQUE,
     description TEXT,
     created_by INTEGER NOT NULL REFERENCES users(id),
     created_at INTEGER NOT NULL
