@@ -1,7 +1,7 @@
 ---
 name: Feature Issue
 about: Issues describing feature implementation and acts as a parent for sub issues
-title: "[Phase X]"
+title: "[Phase X]: "
 labels: feature
 assignees: Dheeps02
 
