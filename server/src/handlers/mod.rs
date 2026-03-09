@@ -3,6 +3,7 @@ use serde::Deserialize;
 pub mod user;
 pub mod room;
 pub mod message;
+pub mod ws;
 
 #[derive(Deserialize)]
 pub struct CreateUser {
