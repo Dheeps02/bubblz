@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 
 #[derive(Clone)]
 pub struct ConnectionRegistry {
-    connections: Arc<Mutex<HashMap<u64, ()>>>
+    connections: Arc<Mutex<HashMap<i64, ()>>>
 }
 
 impl ConnectionRegistry {
@@ -13,12 +13,12 @@ impl ConnectionRegistry {
         }
     }
 
-    pub fn add(&self, user_id: u64, sender: ()) {
+    pub fn add(&self, user_id: i64, sender: ()) {
         let mut map = self.connections.lock().unwrap();
         map.insert(user_id, sender);
     }
 
-    pub fn remove(&self, user_id: u64) {
+    pub fn remove(&self, user_id: i64) {
         let mut map = self.connections.lock().unwrap();
         map.remove(&user_id);
     }
