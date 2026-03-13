@@ -1,11 +1,11 @@
 use axum::extract::{
     FromRef,
-    ws::{self, WebSocket},
+    ws::{Message, WebSocket},
 };
 use futures_util::stream::SplitSink;
 
 use crate::{
-    models::message,
+    errors::BubblzError,
     realtime::{connection_registry::ConnectionRegistry, subscription_registry::SubscriptionRegistry},
 };
 
@@ -23,16 +23,18 @@ impl MessageBroker {
         }
     }
 
-    pub fn publish(&self, room_id: i64, message: message::Message) -> Result<(), String> {
-        for user in self.subscription_registry.get_users(room_id) {}
+    pub async fn publish(&self, room_id: i64, message: Message) -> Result<(), BubblzError> {
+        for user_id in self.subscription_registry.get_users(room_id)? {
+            self.connection_registry.send_to_user(user_id, message.clone()).await?;
+        }
         Ok(())
     }
 
-    pub fn add_user(&self, user_id: i64, sink: SplitSink<WebSocket, ws::Message>) {
-        self.connection_registry.add(user_id, sink)
+    pub async fn add_user(&self, user_id: i64, sink: SplitSink<WebSocket, Message>) {
+        self.connection_registry.add(user_id, sink).await
     }
 
-    pub fn remove_user(&self, user_id: i64) -> Result<(), String> {
-        self.connection_registry.remove(user_id)
+    pub async fn remove_user(&self, user_id: i64) {
+        self.connection_registry.remove(user_id).await
     }
 }
