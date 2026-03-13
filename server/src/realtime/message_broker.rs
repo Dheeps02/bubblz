@@ -37,4 +37,12 @@ impl MessageBroker {
     pub async fn remove_user(&self, user_id: i64) {
         self.connection_registry.remove(user_id).await
     }
+
+    pub async fn subscribe(&self, user_id: i64, room_id: i64) -> Result<(), BubblzError> {
+        self.subscription_registry.subscribe(user_id, room_id)
+    }
+
+    pub async fn unsubscribe(&self, user_id: i64, room_id: i64) -> Result<(), BubblzError> {
+        self.subscription_registry.unsubscribe(user_id, room_id)
+    }
 }
