@@ -2,6 +2,7 @@
 pub enum BubblzError {
     LockPoisoned(String),
     SendFailed(String),
+    Deserialize(String),
 }
 
 impl std::fmt::Display for BubblzError {
@@ -9,6 +10,7 @@ impl std::fmt::Display for BubblzError {
         match self {
             BubblzError::LockPoisoned(msg) => write!(f, "Lock poisoned: {}", msg),
             BubblzError::SendFailed(msg) => write!(f, "Failed to write to sender: {}", msg),
+            BubblzError::Deserialize(msg) => write!(f, "Failed to deserialize message: {}", msg),
         }
     }
 }
