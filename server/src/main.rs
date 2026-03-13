@@ -1,7 +1,7 @@
 mod db;
 mod handlers;
 mod models;
-mod registry;
+mod realtime;
 
 use crate::{
     handlers::{
@@ -10,7 +10,7 @@ use crate::{
         user::create_user,
         ws::websocket_handler,
     },
-    registry::ConnectionRegistry,
+    realtime::registry::ConnectionRegistry,
 };
 use axum::{
     Router,
