@@ -11,7 +11,7 @@ use crate::{
         user::create_user,
         ws::websocket_handler,
     },
-    realtime::connection_registry::ConnectionRegistry,
+    realtime::message_broker::MessageBroker,
 };
 use axum::{
     Router,
@@ -24,7 +24,7 @@ use tokio::net::TcpListener;
 #[derive(Clone, FromRef)]
 struct AppState {
     pool: SqlitePool,
-    registry: ConnectionRegistry,
+    router: MessageBroker,
 }
 
 #[tokio::main]
@@ -34,7 +34,7 @@ async fn main() {
         .expect("Failed to establish DB connection with bubblz.db");
     let state = AppState {
         pool,
-        registry: ConnectionRegistry::new(),
+        router: MessageBroker::new(),
     };
     let router = Router::new()
         .route("/users", post(create_user))
