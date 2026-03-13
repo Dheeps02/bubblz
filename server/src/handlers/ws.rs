@@ -1,17 +1,33 @@
+use crate::{errors::BubblzError, realtime::message_broker::MessageBroker};
 use axum::extract::{
     Query, State,
-    ws::{WebSocket, WebSocketUpgrade},
+    ws::{Message, WebSocket, WebSocketUpgrade},
 };
 use axum::response::IntoResponse;
 use futures_util::StreamExt;
 use serde::Deserialize;
 
-use crate::realtime::message_broker::MessageBroker;
-
 #[derive(Deserialize)]
 pub struct WsParams {
     pub user_id: i64,
 }
+
+#[derive(Deserialize)]
+#[serde(rename_all = "snake_case")]
+enum FrameType {
+    Subscribe,
+    Unsubscribe,
+    Message,
+}
+
+#[derive(Deserialize)]
+pub struct WsFrame {
+    #[serde(rename = "type")]
+    frame_type: FrameType,
+    room_id: i64,
+    content: Option<String>,
+}
+
 pub async fn websocket_handler(
     ws: WebSocketUpgrade,
     Query(params): Query<WsParams>,
@@ -28,7 +44,10 @@ async fn handle_socket(mut ws: WebSocket, router: MessageBroker, user_id: i64) {
     // Loop and look for messages
     loop {
         match stream.next().await {
-            Some(Ok(message)) => handle_message(), // Successful Message Reception. Handle it.
+            // TODO: log or handle errors from handle_frame
+            Some(Ok(message)) => {
+                let _ = handle_frame(&router, user_id, message).await;
+            }
             Some(Err(_)) => {
                 break;
             } // Some Error Occured. Break the loop and disconnect user.
@@ -42,8 +61,18 @@ async fn handle_socket(mut ws: WebSocket, router: MessageBroker, user_id: i64) {
     router.remove_user(user_id).await;
 }
 
-fn handle_message() {
-    // PLACEHOLDER FUNCTION
-    // PLACEHODLER IMPLEMENTATION
-    // TODO: forward message to pub/sub router (Issue #9)
+async fn handle_frame(router: &MessageBroker, user_id: i64, message: Message) -> Result<(), BubblzError> {
+    match message {
+        Message::Text(text) => {
+            let frame: WsFrame =
+                serde_json::from_str(&text).map_err(|err| BubblzError::Deserialize(err.to_string()))?;
+
+            match frame.frame_type {
+                FrameType::Message => router.publish(frame.room_id, Message::Text(text)).await,
+                FrameType::Subscribe => router.subscribe(user_id, frame.room_id).await,
+                FrameType::Unsubscribe => router.unsubscribe(user_id, frame.room_id).await,
+            }
+        }
+        _ => Ok(()), // Ignore Binary, Ping, Pong, Close frames for now.
+    }
 }
