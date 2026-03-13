@@ -37,4 +37,13 @@ impl SubscriptionRegistry {
 
         Ok(())
     }
+
+    pub fn get_users(&self, room_id: i64) -> Result<HashSet<i64>, BubblzError> {
+        let map = self
+            .participants_room
+            .lock()
+            .map_err(|err| BubblzError::LockPoisoned(err.to_string()))?;
+
+        Ok(map.get(&room_id).cloned().unwrap_or_default())
+    }
 }
