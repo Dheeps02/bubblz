@@ -9,3 +9,4 @@ axum = { version = "0.8", features = ["macros", "ws"] }
 sqlx = { version = "0.8", features = ["runtime-tokio", "sqlite"] }
 serde = { version = "1", features = ["derive"] }
 tokio-tungstenite =  { version = "0.28.0", features = ["native-tls"] }
+futures-util = "=0.3.31"
