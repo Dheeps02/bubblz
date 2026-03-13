@@ -1,4 +1,5 @@
 mod db;
+mod errors;
 mod handlers;
 mod models;
 mod realtime;
@@ -10,7 +11,7 @@ use crate::{
         user::create_user,
         ws::websocket_handler,
     },
-    realtime::registry::ConnectionRegistry,
+    realtime::connection_registry::ConnectionRegistry,
 };
 use axum::{
     Router,

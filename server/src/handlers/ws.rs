@@ -5,7 +5,7 @@ use axum::extract::{
 use axum::response::IntoResponse;
 use serde::Deserialize;
 
-use crate::realtime::registry::ConnectionRegistry;
+use crate::realtime::connection_registry::ConnectionRegistry;
 
 #[derive(Deserialize)]
 pub struct WsParams {

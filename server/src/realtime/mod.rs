@@ -1,1 +1,1 @@
-pub mod registry;
+pub mod connection_registry;
