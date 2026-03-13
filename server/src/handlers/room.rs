@@ -1,8 +1,15 @@
-use axum::{extract::{Json, State}, response::IntoResponse, http::StatusCode};
-use sqlx::SqlitePool;
 use crate::handlers::CreateRoom;
+use axum::{
+    extract::{Json, State},
+    http::StatusCode,
+    response::IntoResponse,
+};
+use sqlx::SqlitePool;
 
-pub async fn create_room(State(pool): State<SqlitePool>, Json(room): Json<CreateRoom>) -> Result<impl IntoResponse, StatusCode> {
+pub async fn create_room(
+    State(pool): State<SqlitePool>,
+    Json(room): Json<CreateRoom>,
+) -> Result<impl IntoResponse, StatusCode> {
     let mut conn = pool.acquire().await.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     sqlx::query("INSERT INTO rooms (name, description, created_by, created_at) VALUES (?, ?, ?, ?)")

@@ -3,13 +3,13 @@ use std::sync::{Arc, Mutex};
 
 #[derive(Clone)]
 pub struct ConnectionRegistry {
-    connections: Arc<Mutex<HashMap<i64, ()>>>
+    connections: Arc<Mutex<HashMap<i64, ()>>>,
 }
 
 impl ConnectionRegistry {
     pub fn new() -> Self {
         ConnectionRegistry {
-            connections: Arc::new(Mutex::new(HashMap::new()))
+            connections: Arc::new(Mutex::new(HashMap::new())),
         }
     }
 

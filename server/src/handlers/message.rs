@@ -1,13 +1,21 @@
-use axum::{extract::{Json, State, Path}, response::IntoResponse, http::StatusCode};
-use sqlx::SqlitePool;
 use crate::handlers::CreateMessage;
 use crate::models::message::Message;
+use axum::{
+    extract::{Json, Path, State},
+    http::StatusCode,
+    response::IntoResponse,
+};
+use sqlx::SqlitePool;
 
-pub async fn create_message(State(pool): State<SqlitePool>, Path(room_id): Path<i64>, Json(message): Json<CreateMessage>) -> Result<impl IntoResponse, StatusCode> {
+pub async fn create_message(
+    State(pool): State<SqlitePool>,
+    Path(room_id): Path<i64>,
+    Json(message): Json<CreateMessage>,
+) -> Result<impl IntoResponse, StatusCode> {
     let mut conn = pool.acquire().await.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     sqlx::query("INSERT INTO messages (message_type, sender, room, timestamp, content) VALUES (?, ?, ?, ?, ?)")
-        .bind("Text")                // Message Type texts are the only ones hitting the endpoint. Any system type would be auto generated hopefully. Correct me if am wrong
+        .bind("Text") // Message Type texts are the only ones hitting the endpoint. Any system type would be auto generated hopefully. Correct me if am wrong
         .bind(message.sender_id)
         .bind(room_id)
         .bind(0)
@@ -19,7 +27,10 @@ pub async fn create_message(State(pool): State<SqlitePool>, Path(room_id): Path<
     Ok(StatusCode::CREATED)
 }
 
-pub async fn get_messages(State(pool): State<SqlitePool>, Path(room_id): Path<i64>) -> Result<impl IntoResponse, StatusCode> {
+pub async fn get_messages(
+    State(pool): State<SqlitePool>,
+    Path(room_id): Path<i64>,
+) -> Result<impl IntoResponse, StatusCode> {
     let mut conn = pool.acquire().await.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     let messages = sqlx::query_as::<_, Message>("SELECT * FROM messages WHERE room = ?")
@@ -29,5 +40,4 @@ pub async fn get_messages(State(pool): State<SqlitePool>, Path(room_id): Path<i6
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     Ok(Json(messages))
-
 }

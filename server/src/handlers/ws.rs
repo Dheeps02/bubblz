@@ -1,4 +1,7 @@
-use axum::extract::{ws::{WebSocketUpgrade, WebSocket}, State, Query};
+use axum::extract::{
+    Query, State,
+    ws::{WebSocket, WebSocketUpgrade},
+};
 use axum::response::IntoResponse;
 use serde::Deserialize;
 
@@ -8,23 +11,28 @@ use crate::registry::ConnectionRegistry;
 pub struct WsParams {
     pub user_id: i64,
 }
-pub async fn websocket_handler (ws: WebSocketUpgrade, Query(params): Query<WsParams>, State(registry): State<ConnectionRegistry>) -> impl IntoResponse {
-    ws.on_upgrade(move |web_socket| async move {
-        handle_socket(web_socket, registry, params.user_id).await
-    })
+pub async fn websocket_handler(
+    ws: WebSocketUpgrade,
+    Query(params): Query<WsParams>,
+    State(registry): State<ConnectionRegistry>,
+) -> impl IntoResponse {
+    ws.on_upgrade(move |web_socket| async move { handle_socket(web_socket, registry, params.user_id).await })
 }
 
 async fn handle_socket(mut ws: WebSocket, registry: ConnectionRegistry, user_id: i64) {
-
     // Add user
     registry.add(user_id, ());
 
     // Loop and look for messages
     loop {
         match ws.recv().await {
-            Some(Ok(message)) => {handle_message()}     // Successful Message Reception. Handle it.
-            Some(Err(_)) => {break;}                    // Some Error Occured. Break the loop and disconnect user.
-            None => {break;}                            // User disconnected cleanly. Break the loop and Remove user.
+            Some(Ok(message)) => handle_message(), // Successful Message Reception. Handle it.
+            Some(Err(_)) => {
+                break;
+            } // Some Error Occured. Break the loop and disconnect user.
+            None => {
+                break;
+            } // User disconnected cleanly. Break the loop and Remove user.
         }
     }
 
