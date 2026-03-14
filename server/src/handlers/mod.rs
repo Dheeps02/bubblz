@@ -5,14 +5,14 @@ pub mod room;
 pub mod user;
 pub mod ws;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct CreateUser {
     pub username: String,
     pub password: String,
     pub email: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct CreateRoom {
     pub name: String,
     pub description: String,
