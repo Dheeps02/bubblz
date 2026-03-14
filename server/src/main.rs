@@ -32,10 +32,14 @@ struct AppState {
 async fn main() {
     // Initialize tracing subscriber for logging
     tracing_subscriber::fmt()
+        .pretty()
         .with_env_filter(
             tracing_subscriber::EnvFilter::try_from_default_env()
                 .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("info")),
         )
+        .with_file(true)
+        .with_line_number(true)
+        .with_ansi(true)
         .init();
 
     let pool = db::establish_db_connection("sqlite:bubblz.db?mode=rwc", "schema.sql")
