@@ -1,18 +1,31 @@
-#[derive(Debug)]
+use thiserror::Error;
+
+#[derive(Debug, Error)]
 pub enum BubblzError {
+    #[error("Mutex lock poisoned: {0}")]
     LockPoisoned(String),
+
+    #[error("WebSocket send failed: {0}")]
     SendFailed(String),
+
+    #[error("Deserialization failed: {0}")]
     Deserialize(String),
-}
 
-impl std::fmt::Display for BubblzError {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match self {
-            BubblzError::LockPoisoned(msg) => write!(f, "Lock poisoned: {}", msg),
-            BubblzError::SendFailed(msg) => write!(f, "Failed to write to sender: {}", msg),
-            BubblzError::Deserialize(msg) => write!(f, "Failed to deserialize message: {}", msg),
-        }
-    }
-}
+    #[error("Database error: {0}")]
+    Database(String),
 
-impl std::error::Error for BubblzError {}
+    #[error("Resource not found: {0}")]
+    NotFound(String),
+
+    #[error("Validation error: {0}")]
+    Validation(String),
+
+    #[error("WebSocket error: {0}")]
+    WebSocket(String),
+
+    #[error("Unauthorized: {0}")]
+    Unauthorized(String),
+
+    #[error("Forbidden: {0}")]
+    Forbidden(String),
+}
